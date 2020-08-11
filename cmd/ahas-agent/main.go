@@ -5,6 +5,7 @@ import (
 	"ahas-agent/pkg/proc"
 	client "github.com/influxdata/influxdb1-client/v2"
 	"os"
+	"strconv"
 	"time"
 )
 
@@ -25,7 +26,7 @@ func main() {
 		// 开始采集进程数据
 		go reportProcess(c)
 
-		time.Sleep(10 * time.Second)
+		time.Sleep(1 * time.Second)
 	}
 }
 
@@ -46,7 +47,7 @@ func reportProcess(c client.Client) {
 	for i := processData.Front(); i != nil; i = i.Next() {
 		// 上报数据
 		ps := i.Value.(proc.PData)
-		tags := map[string]string{"host": hostName, "pid": string(ps.Pid)}
+		tags := map[string]string{"host": hostName, "pid": strconv.Itoa(int(ps.Pid))}
 		fields := map[string]interface{}{
 			"ppid": ps.Ppid,
 			"path": ps.Path,
@@ -64,7 +65,7 @@ func reportProcess(c client.Client) {
 
 	for i := connectData.Front(); i != nil; i = i.Next() {
 		connect := i.Value.(proc.CData)
-		tags := map[string]string{"host": hostName, "pid": string(connect.Pid)}
+		tags := map[string]string{"host": hostName, "pid": strconv.Itoa(int(connect.Pid))}
 		fields := map[string]interface{}{
 			"localAddr":  connect.LocalAddr,
 			"remoteAddr": connect.RemoteAddr,

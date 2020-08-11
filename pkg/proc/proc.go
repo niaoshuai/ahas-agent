@@ -8,6 +8,7 @@ import (
 	"ahas-agent/pkg/logger"
 	"container/list"
 	"github.com/shirou/gopsutil/process"
+	"strconv"
 	"strings"
 )
 
@@ -43,39 +44,47 @@ func GetProcessData() (*list.List, *list.List) {
 		path, err := process.Exe()
 		if err != nil {
 			logger.Warn(err)
+			continue
 		}
 		// 排除
 		if len(path) == 0 {
 			continue
 		}
-		if !strings.Contains(path, "java") {
+		if !strings.Contains(path, "java") && !strings.Contains(path, "ssh") {
 			continue
 		}
 
 		ppid, err := process.Ppid()
 		if err != nil {
 			logger.Warn(err)
+			continue
 		}
 		exec, err := process.Cmdline()
 		if err != nil {
 			logger.Warn(err)
+			continue
 		}
 		cpu, err := process.CPUPercent()
 		if err != nil {
 			logger.Warn(err)
+			continue
 		}
 		mem, err := process.MemoryPercent()
 		if err != nil {
 			logger.Warn(err)
+			continue
 		}
 		//获取网络链接状态
 		connStatList, err := process.Connections()
 		if err != nil {
 			logger.Warn(err)
+			continue
 		}
 
+		pid := process.Pid
+
 		pData := PData{
-			Pid:  process.Pid,
+			Pid:  pid,
 			Ppid: ppid,
 			Path: path,
 			Exec: exec,
@@ -87,14 +96,14 @@ func GetProcessData() (*list.List, *list.List) {
 		for _, connStat := range connStatList {
 			cData := CData{
 				Pid:        process.Pid,
-				LocalAddr:  connStat.Laddr.String(),
-				RemoteAddr: connStat.Raddr.String(),
+				LocalAddr:  connStat.Laddr.IP,
+				RemoteAddr: connStat.Raddr.IP,
 				Status:     connStat.Status,
 			}
 			connectData.PushBack(cData)
 		}
 	}
 
-	logger.Info("processData:")
+	logger.Info(strconv.Itoa(processData.Len()))
 	return processData, connectData
 }
