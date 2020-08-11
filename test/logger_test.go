@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestLogger(t *testing.T)  {
+func TestLogger(t *testing.T) {
 	logger.InitLog("tests.log")
 	logger.Info("testInfo")
 	//logger.Fatal(nil)
