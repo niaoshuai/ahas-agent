@@ -8,6 +8,10 @@ all: test build
 .PHONY: build
 build:
 	$(GO) build -v ./cmd/...
+build-linux:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GO) build -v ./cmd/...
+build-mac:
+	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GO) build -v ./cmd/...
 
 .PHONY: test
 test:
@@ -18,9 +22,3 @@ clean:
 	$(GO) clean
 	@rm -rf test/tests.* test/coverage.*
 	@rm -rf ahas-agent
-
-# Cross compilation
-build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -v ./cmd/...
-build-mac:
-	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) -v ./cmd/...

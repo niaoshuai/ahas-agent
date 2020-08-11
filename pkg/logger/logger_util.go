@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Logger  = log.New()
+	Logger = log.New()
 )
 
 func InitLog(logPath string) {
@@ -38,6 +38,11 @@ func Error(err error) {
 	Logger.WithFields(fields).Error(err)
 }
 
+func Warn(err error) {
+	fields := formatLog()
+	Logger.WithFields(fields).Warn(err)
+}
+
 /**
  * 为日志字段增加文件和行号
  */
@@ -50,9 +55,8 @@ func formatLog() log.Fields {
 
 	var fields = log.Fields{
 		"file": file,
-		"line":   line,
+		"line": line,
 	}
 
 	return fields
 }
-
